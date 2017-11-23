@@ -9,17 +9,20 @@ import java.util.Random;
  * @author 22948
  */
 public class DatabaseHelp {
+    public DatabaseHelp(){}
     /*返回用户等级若为1则为普通用户，为2则为管理员用户*/
-    public int getUserPermission(String account,String password){
+
+    public static int getUserPermission(String account,String password){
         int result = -1;
         try{
-            String sql = "SELECT * FROM t_user WHERE account = ? AND password password = ?";
+            String sql = "SELECT * FROM t_user WHERE account = ?";
             Connection conn = getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1,account);
-            pstmt.setString(2,password);
             ResultSet rs = pstmt.executeQuery();
-            if(rs.next()){
+            if(rs.next()
+                    &&rs.getString("account").equals(account)
+                    &&rs.getString("password").equals(password)){
                 result = rs.getInt("permission");
             }
             rs.close();
@@ -30,7 +33,7 @@ public class DatabaseHelp {
         }
         return result;
     }
-    public void addUser(User user){
+    public static void addUser(User user){
         Connection conn = null;
         try{
             String sql = "INSERT INTO t_user(account,password,permission) VALUES(?,?,?)";
@@ -47,7 +50,7 @@ public class DatabaseHelp {
         }
     }
 
-    public void updatePasswordForUser(String account,String newPassword){
+    public static void updatePasswordForUser(String account,String newPassword){
         try {
             String sql = "UPDATE FROM USER SET password = ? WHERE account = ?";
             Connection conn = getConnection();
@@ -63,17 +66,17 @@ public class DatabaseHelp {
     }
 
     //有一条插入不成功就回滚
-    public void addUsers(List<User> list) throws SQLException {
+    public static void addUsers(List<User> list) throws SQLException {
         Connection conn = null;
         try {
             String sql = "INSERT INTO t_user(account,password,permission) VALUES(?,?,?)";
             conn = getConnection();
             conn.setAutoCommit(false);
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            for (int i = 0; i < list.size(); i++) {
-                pstmt.setString(1,list.get(i).getAccount());
-                pstmt.setString(2,list.get(i).getPassword());
-                pstmt.setString(3,list.get(i).getPermission());
+            for (User aList : list) {
+                pstmt.setString(1, aList.getAccount());
+                pstmt.setString(2, aList.getPassword());
+                pstmt.setString(3, aList.getPermission());
                 pstmt.execute();
             }
             conn.commit();
@@ -88,7 +91,7 @@ public class DatabaseHelp {
 
 
 
-    private Connection getConnection() {
+    private static Connection getConnection() {
         Connection connection = null;
         String user = "JavaWeb";
         String password = "q1w2e3r4";

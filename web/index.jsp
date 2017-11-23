@@ -8,9 +8,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
   <head>
-    <title>$Title$</title>
+    <title>在线答题系统</title>
   </head>
   <body>
-  $END$
+
   </body>
 </html>
